@@ -8,4 +8,3 @@ Implementations of models from Deep Learning, Machine Learning, A.I. courses tha
 - [ ] Depth-first Search
 - [ ] A* search
 - [ ] RNN with Long short term memory
-- [ ] 
