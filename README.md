@@ -4,7 +4,7 @@ Implementations of models from Deep Learning, Machine Learning, A.I. courses tha
 ## Implementation List  
 - [ ] Autoencoders
 - [ ] Convolutional AE
-- [ ] Breadth-first Search
-- [ ] Depth-first Search
+- [x] Breadth-first Search
+- [x] Depth-first Search
 - [ ] A* search
 - [ ] RNN with Long short term memory
