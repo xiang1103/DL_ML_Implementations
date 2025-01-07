@@ -3,11 +3,12 @@ Implementations of models from Deep Learning, Machine Learning, A.I. courses tha
 
 ## Implementation List  
 - [x] Autoencoders
-- [ ] Convolutional AE
+- [x] Convolutional AE
 - [x] Breadth-first Search
 - [x] Depth-first Search
 - [ ] A* search
 - [ ] RNN with Long short term memory
+- [ ] Variational Autoencoder 
 
 
 This project is inspired by [Sebastian Raschka's Deep Learning Model repository](https://github.com/rasbt/deeplearning-models/tree/master). 
