@@ -10,6 +10,7 @@ Implementations of models from Deep Learning, Machine Learning, A.I. courses tha
 - [ ] RNN with Long short term memory
 - [ ] Variational Autoencoder 
 - [ ] Sparse Autoencoder with noise input
+- [ ] Basics (backprop, gradient descent, logistic & linear regression)
 
 
 This project is inspired by [Sebastian Raschka's Deep Learning Model repository](https://github.com/rasbt/deeplearning-models/tree/master). 
