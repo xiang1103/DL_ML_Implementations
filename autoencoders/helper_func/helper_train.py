@@ -1,6 +1,6 @@
-from helper_evaluate import compute_accuracy
-from helper_evaluate import compute_epoch_loss_classifier
-from helper_evaluate import compute_epoch_loss_autoencoder
+from autoencoders.helper_func.helper_evaluate import compute_accuracy
+from autoencoders.helper_func.helper_evaluate import compute_epoch_loss_classifier
+from autoencoders.helper_func.helper_evaluate import compute_epoch_loss_autoencoder
 
 import time
 import torch
