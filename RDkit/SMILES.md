@@ -9,3 +9,5 @@
   - **Atoms and Bonds**: All atoms are encoded by their representation on the Periodic table (O for Oxygen). The bonds are represented by specific symbols. Such as {=} for double bond. Single bonds are not encoded  [Check the here](https://archive.epa.gov/med/med_archive_03/web/html/smiles.html)
   - **Simple Bonds**: Hydrogen atoms are omitted by default (implicit). But we can specify the hydrogen bonding explicitly as well. 
     - There are consequences of omitting Hydrogen bonding. Without explicit Hydrogen atoms, programs add Hydrogen to "fill in the blank". 
+  - **Rings**: Rings are represented by numbers right after the bond 
+  - **Specifications**: We can specify changed atom (valence electrons) in the SMILES strings by {#}
