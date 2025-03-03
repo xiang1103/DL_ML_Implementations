@@ -9,5 +9,20 @@
   - **Atoms and Bonds**: All atoms are encoded by their representation on the Periodic table (O for Oxygen). The bonds are represented by specific symbols. Such as {=} for double bond. Single bonds are not encoded  [Check the here](https://archive.epa.gov/med/med_archive_03/web/html/smiles.html)
   - **Simple Bonds**: Hydrogen atoms are omitted by default (implicit). But we can specify the hydrogen bonding explicitly as well. 
     - There are consequences of omitting Hydrogen bonding. Without explicit Hydrogen atoms, programs add Hydrogen to "fill in the blank". 
+    - Without hydrogen bonds, there are less atoms for the machine to process and store. 
   - **Rings**: Rings are represented by numbers right after the bond 
   - **Specifications**: We can specify changed atom (valence electrons) in the SMILES strings by {#}
+  - **No stereochemistry or isotopic information is incluced in generic SMILES**
+  - More specific encoding rules can be found in the paper above. 
+
+# Different SMILES System 
+### Generic SMILES 
+- The most basic form of SMILES strings representations that translates a molecular graph into a 2D sequence (picture) with atoms and bonds, but no chiral or isotopic information. 
+- We can have multiple generic SMILES representation of the same atom  
+### Canonical/Unique SMILES 
+- An **unique** representation of a SMILES string generated from a canonicalization algorithm. 
+- Still does not contain any stereochemistry or isotopic information. 
+### Isomeric SMILES 
+- SMILES that encode both stereochemistry/chiral and isotopic information in the representation. 
+### Absolute SMILES 
+- An isomeric canonical SMILES is an Absolute SMILES. It is unique and contains stereochemistry and isotopic information. 
