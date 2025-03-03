@@ -24,5 +24,6 @@
 - Still does not contain any stereochemistry or isotopic information. 
 ### Isomeric SMILES 
 - SMILES that encode both stereochemistry/chiral and isotopic information in the representation. 
+- Isotopic encoding information [can be found here](https://www.daylight.com/dayhtml/doc/theory/theory.smiles.html) 
 ### Absolute SMILES 
 - An isomeric canonical SMILES is an Absolute SMILES. It is unique and contains stereochemistry and isotopic information. 
