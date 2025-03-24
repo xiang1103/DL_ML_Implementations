@@ -24,6 +24,8 @@
 - Still does not contain any stereochemistry or isotopic information. 
 ### Isomeric SMILES 
 - SMILES that encode both stereochemistry/chiral and isotopic information in the representation. 
+- Isomeric SMILES might not show all the atom bonds/atoms explicitly. We need Chem.AddHs() to show all the atom information 
+- Isomeric SMILES only shows the H bonds related to chirality such as @@H 
 - Isotopic encoding information [can be found here](https://www.daylight.com/dayhtml/doc/theory/theory.smiles.html) 
 ### Absolute SMILES 
 - An isomeric canonical SMILES is an Absolute SMILES. It is unique and contains stereochemistry and isotopic information. 
