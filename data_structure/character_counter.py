@@ -19,7 +19,7 @@ def character_counter(s:str):
 def main(): 
     input= "Build Your Career brick by brick"
     print(character_counter(input))
-    print(len(input))
+    print("Length with sapces:",len(input))
 
 if __name__ == "__main__":
     main() 
