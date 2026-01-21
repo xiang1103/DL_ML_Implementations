@@ -22,6 +22,8 @@
     - **The ground truth is assumed the diagonal**. This is because each diagonal contains the matching text and images 
     - take Symmetric Cross Entropy (acorss row of image embedding) and across column of text embedding 
 
+- trained on figuring out image and caption matching, not at further generations
+
 ## Features of CLIP 
 - preserved invariance both in text and image processing. Because transformer's self attention works regardless of the position of the pixel and of the data batch order. Invariance is preserved from images automatically 
 
