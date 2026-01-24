@@ -1,0 +1,38 @@
+{
+    "training_materials/images/bicycle_woman.jpg": 
+    [
+        "a woman riding a bicycle under an umbrella.",
+        "a young woman is riding a back while holding her red umbrella.",
+        "a woman riding a bicycle in front of a mountain while holding an umbrella.",
+        "a woman rides a bicycle holding an umbrella.",
+        "a woman riding a bicycle holding an umbrella"
+    ], 
+    
+    "training_materials/images/plane.jpg": 
+        [
+            "an airplane that is sitting in a hanger.",
+            "small blue and white prop plane parked in an airplane hangar.",
+            "a small blue and white plane parked in a hangar.",
+            "a small white airplane parked in a building.",
+            "a propeller plane sits parked inside of a hanger"
+        ], 
+    
+    
+    "training_materials/images/man grass.jpg": 
+    [
+            "a man rides a bike through a dry grass field",
+            "a man riding a bike with his helmet on through the grass.",
+            "a man on a bicycle with a dog walking next to him",
+            "a man is riding a bike next to a dog.",
+            "a man with a dog is going for a bike ride." 
+    ], 
+
+    "training_materials/images/man bike.jpg": 
+    [
+            "a man riding a bike close to a red fence",
+            "a man wearing a helmet and sitting on a bike",
+            "man riding a bike on a wet street in an urban setting",
+            "a man is riding a bike while wearing a helmet",
+            "a man wearing a helmet on a bicycle in a street that has a guard railing on the side of the walkway."   
+    ]
+}
