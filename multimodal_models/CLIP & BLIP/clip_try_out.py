@@ -20,7 +20,9 @@ Encoding image into patches and into one layer (ViT):
 
 Encoding text: 
     - given input text, we need to tokenize the text first and make sure it fits within the context length for matrix multiplication 
-    -    
+    - then does embedding and the transformer layers with causal attention 
+    - because of attention, the last EOS token has seen all the words, which contains all the information
+    - so it outputs the final EOS token embedding 
     
 '''
 
@@ -79,7 +81,7 @@ def main():
 
     context_length = 12 # total size of inputs + outputs (N), limits our model input size 
     vocab_size = len(tokenizer)
-    transformer_width = 5  # width within the transformer for processing the text 
+    transformer_width = 6  # width within the transformer for processing the text 
     transformer_heads= 2    # number of multiattention head to go through (# of different QKV pairs) 
     transformer_layers= 1   # number of layer of entire transformer operation 
 
@@ -87,7 +89,7 @@ def main():
                  context_length, vocab_size, transformer_width, transformer_heads, transformer_layers)
 
 
-    # image_tokens= model.visual(processed_img)
+    image_tokens= model.visual(processed_img)
 
 
     # 1 x 5 
@@ -98,7 +100,10 @@ def main():
 
     text_tokens= model.encode_text(torch.tensor(tokens).unsqueeze(0))
     
+    print(image_tokens)
     print(text_tokens)
+
+    print(image_tokens@text_tokens.T)
 
 
 

@@ -266,7 +266,7 @@ class VisionTransformer(nn.Module):
         # make into paches 
         x = self.conv1(x)  # shape = [*, width, grid, grid]
 
-        print(f"Shape after conv: {x.shape}")
+        #print(f"Shape after conv: {x.shape}")
 
         # flatten each of the RGB dimension into single vector linearly 
         ''' 
@@ -296,7 +296,7 @@ class VisionTransformer(nn.Module):
         x = x + self.positional_embedding.to(x.dtype)   
        
        
-        print(f"Shape after positioning: {x.shape}")    
+        #print(f"Shape after positioning: {x.shape}")    
 
         # layer norm 
         x = self.ln_pre(x)
@@ -312,12 +312,12 @@ class VisionTransformer(nn.Module):
         # (N, patches+1, width) 
         x = x.permute(1, 0, 2)  # LND -> NLD
 
-        print(f"Shape after transformer: {x.shape}")
+        #print(f"Shape after transformer: {x.shape}")
 
         # layer norm with respect to the summary token 
         # only take the first row of summary token, then apply norm to the first
         x = self.ln_post(x[:, 0, :])
-        print(f"Shape after layer norm: {x.shape}")
+        #print(f"Shape after layer norm: {x.shape}")
 
         # output embedding dimension 
         if self.proj is not None:
@@ -413,20 +413,24 @@ class CLIP(nn.Module):
         # each sentence would be turned into the same length (sequence_len)
         x = self.token_embedding(text).type(self.dtype)  # [batch_size, n_ctx, d_model]
         
-        print(f"Size of text x after token embedding: {x.shape}")
-        print(f"x after embedding: {x}")
+        #print(f"Size of text x after token embedding: {x.shape}")
+        #print(f"x after embedding: {x}")
 
         # add positional encoding with learnable parameters 
         x = x + self.positional_embedding.type(self.dtype)
-
+        
         
         x = x.permute(1, 0, 2)  # NLD -> LND
         x = self.transformer(x)
         x = x.permute(1, 0, 2)  # LND -> NLD
+        
+        #print(f"x after transformer: {x}")
+
         x = self.ln_final(x).type(self.dtype)
 
         # x.shape = [batch_size, n_ctx, transformer.width]
         # take features from the eot embedding (eot_token is the highest number in each sequence)
+        # finds EOS token location for each batch, and projects it 
         x = x[torch.arange(x.shape[0]), text.argmax(dim=-1)] @ self.text_projection
 
         return x
