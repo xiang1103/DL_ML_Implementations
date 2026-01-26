@@ -1,5 +1,7 @@
 ''' 
-high level implementation of a decoder 
+high level implementation of a decoder from BLIP 
+
+Can be combined with CLIP to make an encoder & decoder model based on Language modeling loss 
 '''
 import torch
 import torch.nn as nn
@@ -21,6 +23,9 @@ class SimpleDecoderLayer(nn.Module):
         self.ln1 = nn.LayerNorm(d_model)
         self.ln2 = nn.LayerNorm(d_model)
         self.ln3 = nn.LayerNorm(d_model)
+
+
+
 
     def forward(self, x, context_features, causal_mask):
         # x: Current text sequence [Batch, Seq_Len, D]
@@ -76,19 +81,27 @@ class TransformerDecoder(nn.Module):
         
         ''' 
         batch size = 1 sentence, 2 tokens(words), d_embed= 3  
-        [1,1,1]
-        [2,2,2]
-
+       input: Q, K= 
+                [1,1,1]
+                    [2,2,2]
+        W_q = W_k = 3 x2 
         casual mask= 
             [0,1]
             [0,0]
+        
+            Q @K_T = 2x2 
+
+        apply attention_mask to the output of Q * K_T 
+
 
         attention with causual mask: 
             first word only sees it self 
             second word only sees first and second 
             ... 
 
-        this is why the casual mask is seq_len x seq_len 
+                after softmax is applied, only the the words that should be seen have a score  
+
+        this is why the casual mask is seq_len x seq_len, where seq_len = row # of Q
 
         After Q*K_T, the matrix size becomes seq_len x seq_len 
         then apply the mask as addition, turning vlaues that are 1 into -inf
@@ -101,7 +114,7 @@ class TransformerDecoder(nn.Module):
 
 
         '''
-        # create upper triangular matrix 
+        # create upper triangular matrix where the diagonal and below are all 0
         causal_mask = torch.triu(torch.ones(seq_len, seq_len), diagonal=1).bool().to(x.device)
         
         for layer in self.layers:

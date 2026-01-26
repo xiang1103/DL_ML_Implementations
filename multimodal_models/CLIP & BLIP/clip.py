@@ -188,6 +188,7 @@ class ResidualAttentionBlock(nn.Module):
         '''  
         x: (number_of_patches+1, N, width)
         '''
+        # build attention mask so that it automatically filters out 
         self.attn_mask = self.attn_mask.to(dtype=x.dtype, device=x.device) if self.attn_mask is not None else None
 
         # pass x itself for Q, K, V, which is perfrming slef attention
@@ -221,7 +222,7 @@ class VisionTransformer(nn.Module):
     '''
     def __init__(self, input_resolution: int,   # With or height (assume square image)
                   patch_size: int,  # the kernel size 
-                    width: int,         # number of channels of the image to project to, here we keep it as constant for all layers 
+                    width: int,         # number of channels of the image to project to, here we keep it as constant for all layers during processing
                     layers: int, heads: int, output_dim: int):
         super().__init__()
         self.input_resolution = input_resolution
@@ -255,10 +256,17 @@ class VisionTransformer(nn.Module):
         self.transformer = Transformer(width, layers, heads)
 
         self.ln_post = LayerNorm(width)
+
+        # manual matrix multiplication, not standard feedforward neural network
+        # no bias added 
         self.proj = nn.Parameter(scale * torch.randn(width, output_dim))
 
     def forward(self, x: torch.Tensor):
+
+        # make into paches 
         x = self.conv1(x)  # shape = [*, width, grid, grid]
+
+        print(f"Shape after conv: {x.shape}")
 
         # flatten each of the RGB dimension into single vector linearly 
         ''' 
@@ -269,8 +277,9 @@ class VisionTransformer(nn.Module):
         '''
         x = x.reshape(x.shape[0], x.shape[1], -1)  # shape = [*, width, grid ** 2]
         
-        # reshape into (H,W,C), except H*W into single vector 
-        x = x.permute(0, 2, 1)  # shape = [*, grid ** 2, width]
+        # flatten the patches 
+        # shape = [*, grid ** 2, width]
+        x = x.permute(0, 2, 1)  
        
         # add class_embedding
         ''' 
@@ -280,24 +289,35 @@ class VisionTransformer(nn.Module):
         (N, total_numer_of_patches+1, width)
         
         '''
-        x = torch.cat([self.class_embedding.to(x.dtype) + torch.zeros(x.shape[0], 1, x.shape[-1], dtype=x.dtype, device=x.device), x], dim=1)  # shape = [*, grid ** 2 + 1, width]
+        # shape = [*, grid ** 2 + 1, width]
+        x = torch.cat([self.class_embedding.to(x.dtype) + torch.zeros(x.shape[0], 1, x.shape[-1], dtype=x.dtype, device=x.device), x], dim=1) 
         
-        # (N,patches, width)
+        # (N,patches+1, width)
         x = x + self.positional_embedding.to(x.dtype)   
-        
+       
+       
+        print(f"Shape after positioning: {x.shape}")    
 
         # layer norm 
         x = self.ln_pre(x)
 
         # change dimension for parallelization 
+        # (pachtes+1, N, width)
         x = x.permute(1, 0, 2)  # NLD -> LND
         x = self.transformer(x)
 
+        
+
         # process back into 
+        # (N, patches+1, width) 
         x = x.permute(1, 0, 2)  # LND -> NLD
 
+        print(f"Shape after transformer: {x.shape}")
+
         # layer norm with respect to the summary token 
+        # only take the first row of summary token, then apply norm to the first
         x = self.ln_post(x[:, 0, :])
+        print(f"Shape after layer norm: {x.shape}")
 
         # output embedding dimension 
         if self.proj is not None:
@@ -338,6 +358,7 @@ class CLIP(nn.Module):
 
         # build vision transformer 
         else:
+            # divide by 64 to get the number of heads needed to get that amount of vision width 
             vision_heads = vision_width // 64
             self.visual = VisionTransformer(
                 input_resolution=image_resolution,
@@ -367,6 +388,7 @@ class CLIP(nn.Module):
 
         self.initialize_parameters()
 
+
     def build_attention_mask(self):
         # lazily create causal attention mask, with full attention between the vision tokens
         # pytorch uses additive attention mask; fill with -inf
@@ -390,9 +412,14 @@ class CLIP(nn.Module):
         # conver to hidden dimension 
         # each sentence would be turned into the same length (sequence_len)
         x = self.token_embedding(text).type(self.dtype)  # [batch_size, n_ctx, d_model]
+        
+        print(f"Size of text x after token embedding: {x.shape}")
+        print(f"x after embedding: {x}")
 
         # add positional encoding with learnable parameters 
         x = x + self.positional_embedding.type(self.dtype)
+
+        
         x = x.permute(1, 0, 2)  # NLD -> LND
         x = self.transformer(x)
         x = x.permute(1, 0, 2)  # LND -> NLD
@@ -459,6 +486,35 @@ class CLIP(nn.Module):
 
         # shape = [global_batch_size, global_batch_size]
         return logits_per_image, logits_per_text
+    
+    def initialize_parameters(self):
+        nn.init.normal_(self.token_embedding.weight, std=0.02)
+        nn.init.normal_(self.positional_embedding, std=0.01)
+
+        if isinstance(self.visual, ModifiedResNet):
+            if self.visual.attnpool is not None:
+                std = self.visual.attnpool.c_proj.in_features ** -0.5
+                nn.init.normal_(self.visual.attnpool.q_proj.weight, std=std)
+                nn.init.normal_(self.visual.attnpool.k_proj.weight, std=std)
+                nn.init.normal_(self.visual.attnpool.v_proj.weight, std=std)
+                nn.init.normal_(self.visual.attnpool.c_proj.weight, std=std)
+
+            for resnet_block in [self.visual.layer1, self.visual.layer2, self.visual.layer3, self.visual.layer4]:
+                for name, param in resnet_block.named_parameters():
+                    if name.endswith("bn3.weight"):
+                        nn.init.zeros_(param)
+
+        proj_std = (self.transformer.width ** -0.5) * ((2 * self.transformer.layers) ** -0.5)
+        attn_std = self.transformer.width ** -0.5
+        fc_std = (2 * self.transformer.width) ** -0.5
+        for block in self.transformer.resblocks:
+            nn.init.normal_(block.attn.in_proj_weight, std=attn_std)
+            nn.init.normal_(block.attn.out_proj.weight, std=proj_std)
+            nn.init.normal_(block.mlp.c_fc.weight, std=fc_std)
+            nn.init.normal_(block.mlp.c_proj.weight, std=proj_std)
+
+        if self.text_projection is not None:
+            nn.init.normal_(self.text_projection, std=self.transformer.width ** -0.5)
 
 def loss_function(logits_image, logits_text): 
     '''  

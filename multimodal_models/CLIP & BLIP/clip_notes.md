@@ -35,3 +35,4 @@
 - how much information does the model actually look at each image and text? is it possible for the model to have correlated relationships such as certain pixel order/values with the word "yellow", "red", etc.  Which led to bias in the training data. It doesn't have enough local and spatial understanding during the training process 
 - batch size dependence. the model training performance can still be influenced by the data ordering. Since contrastive loss compares pair-wise with all the other samples in the batch, how relevant/good those samples are inside the batch may make a difference. How many samples inside a batch will also influence training. The higher batch size, the more the model learns to distinguish between each other. It may not maintain the independent and identitically distributed hypothesis behind data shuffling 
 - noisy data 
+- limited text description size because it's global relationships between text and image encoding 
