@@ -278,7 +278,10 @@ class GatedCrossAttentionBlock(nn.Module):
         )
         self.attn_gate = nn.Parameter(torch.tensor([0.0]))
 
+        # regular feedforward with extra dimension 
         self.ff = FeedForward(dim, mult=ff_mult)
+
+        # alpha value 
         self.ff_gate = nn.Parameter(torch.tensor([0.0]))
 
     def forward(
@@ -288,6 +291,11 @@ class GatedCrossAttentionBlock(nn.Module):
         media_locations=None,
         use_cached_media=False,
     ):
+        '''
+        output * tanh(alpha) + image token inputs 
+        '''
+
+
         x = (
             self.attn(
                 x,
