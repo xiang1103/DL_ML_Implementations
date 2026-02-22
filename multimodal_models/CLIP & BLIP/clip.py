@@ -544,6 +544,6 @@ def loss_function(logits_image, logits_text):
 
     # sum the mean loss (2*|B|), we take the average for the best comparison
     # in the future, we can potentially try weighted, so that certian loss of image to text or text to image is better 
-    total= (loss_image+ loss_text)/ (2*logits_image.shape[0])    #(N,1)
+    total= (loss_image+ loss_text)/ (2)    #(N,1)
 
     return total 
