@@ -14,7 +14,6 @@
 - the language genrationn cosst is used for actually generating the text. Cross attention is used in both IMT and LM loss so that the model can better understand the connections and expected output between images and texts 
 - adding more loss functions are alike giving the model more things to learn and enhacing certain aspects of the model, such as the model's ability to know which image goes with which text 
 
-## Pretraining datasets 
 
 
 ## Weakness 

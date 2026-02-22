@@ -98,12 +98,12 @@ def main():
     if (len(tokens)<context_length): 
        tokens= pad_tokens(tokens, context_length)
 
-    text_tokens= model.encode_text(torch.tensor(tokens).unsqueeze(0))
+    #text_tokens= model.encode_text(torch.tensor(tokens).unsqueeze(0))
     
-    print(image_tokens)
-    print(text_tokens)
+    #print(image_tokens)
+    #print(text_tokens)
 
-    print(image_tokens@text_tokens.T)
+    #print(image_tokens@text_tokens.T)
 
 
 

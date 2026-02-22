@@ -174,7 +174,7 @@ class ResidualAttentionBlock(nn.Module):
                     attn_mask: torch.Tensor = None):
         super().__init__()
 
-        self.attn = nn.MultiheadAttention(d_model, n_head)
+        self.attn = nn.MultiheadAttention(d_model, n_head)  # remain 
         self.ln_1 = LayerNorm(d_model)
         self.mlp = nn.Sequential(OrderedDict([
             ("c_fc", nn.Linear(d_model, d_model * 4)),
@@ -186,14 +186,18 @@ class ResidualAttentionBlock(nn.Module):
 
     def attention(self, x: torch.Tensor):
         '''  
-        x: (number_of_patches+1, N, width)
+        x: (number_of_patches+1, Num batches, width)
         '''
         # build attention mask so that it automatically filters out 
         self.attn_mask = self.attn_mask.to(dtype=x.dtype, device=x.device) if self.attn_mask is not None else None
-
+        
+        #print(f"size of x in attention: {x.shape}")
         # pass x itself for Q, K, V, which is perfrming slef attention
         # output the same dimension 
-        return self.attn(x, x, x, need_weights=False, attn_mask=self.attn_mask)[0]
+        att= self.attn(x, x, x, need_weights=False, attn_mask=self.attn_mask)[0]
+
+        #print(f"Shape of attention after transformer output: {att.shape}")
+        return att 
 
     def forward(self, x: torch.Tensor):
         x = x + self.attention(self.ln_1(x))
@@ -538,8 +542,8 @@ def loss_function(logits_image, logits_text):
     # go across each text and look at which image has the highest match, should be the same 
     loss_text= F.cross_entropy(logits_text, labels)
 
-    # sum the loss, we take the average for the best comparison
+    # sum the mean loss (2*|B|), we take the average for the best comparison
     # in the future, we can potentially try weighted, so that certian loss of image to text or text to image is better 
-    total= (loss_image+ loss_text)/2    #(N,1)
+    total= (loss_image+ loss_text)/ (2*logits_image.shape[0])    #(N,1)
 
     return total 
